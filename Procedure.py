@@ -66,6 +66,7 @@ def noise_calc(nexus):
     
     print('evaluating noise mission with centered grid')
     nexus.results = noise_mission.evaluate()
+    nexus.results = nexus.results.base
     
     print('done')
     

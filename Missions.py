@@ -53,7 +53,7 @@ def base(analyses,vehicle):
     # ------------------------------------------------------------------
 
     # base segment
-    control_points = 4
+    control_points = 8
     base_segment = Segments.Segment()
     base_segment.battery_discharge                           = True 
     ones_row  = base_segment.state.ones_row    
