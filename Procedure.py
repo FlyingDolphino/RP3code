@@ -29,16 +29,19 @@ def setup():
 def noise_calc(nexus):
     
             
-    N_gm_x = 10
+    N_gm_x = 10 #resolution of microphones eg 10 per length in x
     N_gm_y = 10
     
-    max_x = 5
-    min_x = -5
-    max_y = 5
-    min_y = 5
+    #defines the max and min positions of the microphone grid
+    max_x = 5 *Units.nmi
+    min_x = -5 *Units.nmi
+    max_y = 5 *Units.nmi
+    min_y = 5 *Units.nmi
     
+    
+    #sets up the analysis
     configs = nexus.vehicle_configurations
-    configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,False)
+    configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,False) #Running the analysis without the noise simulation
     mission = Missions.setup(configs_analyses,configs)
     configs.finalize()
     configs_analyses.finalize()
@@ -50,14 +53,17 @@ def noise_calc(nexus):
     print('Done')
     final_position_vector = positionResults.base.segments[-1].conditions.frames.inertial.position_vector
     
+    
+    #centralises the microphone grid on the end position of the aircraft
     x_center = final_position_vector[3][0]
     y_center = final_position_vector[3][1]
-    
-    max_x += x_center
+    max_x +=x_center
     min_x += x_center
-    max_y += y_center
+    max_y +=y_center
     min_y += y_center
     
+    
+    #sets up and runs the analysis with the noise simulation
     configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,True)
     noise_mission = Missions.setup(configs_analyses,configs)
     configs.finalize()

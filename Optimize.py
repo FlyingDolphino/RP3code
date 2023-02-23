@@ -71,7 +71,7 @@ def setup():
     problem.aliases = [
         [ 'speed'                        ,  'missions.base.segments.initial_approach.altitude_end','missions.base.segments.final_approach.altitude_end'],
         [ 'approach_rate'                  , 'missions.base.segments.final_approach.descent_rate'    ],
-        [ 'height_of_Vertical'                        ,    'missions.base.segments.vertical_landing.altitude_start' ],
+        [ 'height_of_Vertical'                        ,    'missions.base.segments.final_approach.segment.heading_end' ],
         [ 'angle_to_final'         ,    'missions.base.segments.initial_approach.true_course'    ],
     ]    
     
