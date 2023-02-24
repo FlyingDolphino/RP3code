@@ -62,7 +62,6 @@ def base(analyses,vehicle):
 
     base_segment.process.initialize.initialize_battery       = SUAVE.Methods.Missions.Segments.Common.Energy.initialize_battery
     base_segment.process.finalize.post_process.update_battery_state_of_health = SUAVE.Methods.Missions.Segments.Common.Energy.update_battery_state_of_health  
-    base_segment.process.iterate.conditions.planet_position  = SUAVE.Methods.skip
     base_segment.state.numerics.number_control_points        = control_points
     bat                                                      = vehicle.base.networks.battery_propeller.battery
     base_segment.charging_SOC_cutoff                         = bat.cell.charging_SOC_cutoff
@@ -84,7 +83,7 @@ def base(analyses,vehicle):
     segment.altitude = 2000   * Units.feet
     segment.air_speed  = 10 * Units['m/s']
     segment.distance   = 3. * Units.nautical_miles
-    segment.heading = 135
+    segment.true_course = 90 *Units.degrees
     segment.state.unknowns.throttle          = 0.6  * ones_row(1) 
   
 
@@ -92,6 +91,33 @@ def base(analyses,vehicle):
     segment = vehicle.base.networks.battery_propeller.add_unknowns_and_residuals_to_segment(segment)  
     mission.append_segment(segment)
     
+    
+    
+    
+    # ------------------------------------------------------------------    
+    #   turning approach Segment: Constant Speed, Constant Altitude
+    # ------------------------------------------------------------------    
+
+    
+    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag = "turn_to_final"
+    segment.analyses.extend(analyses.cruise)
+    
+    
+    segment.battery_energy = vehicle.base.networks.battery_propeller.battery.max_energy
+ 
+    segment.altitude = 2000   * Units.feet
+    segment.air_speed  = 10 * Units['m/s']
+    segment.true_course = 180*Units.degrees
+    segment.distance   = 2. * Units.nautical_miles
+    segment.state.unknowns.throttle          = 0.6  * ones_row(1) 
+  
+
+    # add to mission
+    segment = vehicle.base.networks.battery_propeller.add_unknowns_and_residuals_to_segment(segment)  
+    mission.append_segment(segment)
+    
+
 
     # ------------------------------------------------------------------
     #   Final approach Segment: Constant Speed, Constant Rate
@@ -105,9 +131,7 @@ def base(analyses,vehicle):
     segment.altitude_start = 2000   *Units.feet
     segment.air_speed  = 10 * Units['m/s']
     segment.descent_rate = 4.5   * Units['m/s']
-    segment.heading_start = 135  # initial heading in degrees
-    segment.turn_rate = 3
-    segment.heading_end = 315  # final heading in degrees
+    segment.true_course = 270*Units.degrees
     segment.altitude_end = 20.0   * Units.ft
     segment.state.unknowns.throttle          = 0.7  * ones_row(1)  
     segment.battery_pack_temperature                   = atmo.temperature[0,0]
@@ -130,14 +154,13 @@ def base(analyses,vehicle):
     segment.altitude                  = 20   * Units.ft
     segment.air_speed_start           = 10.  * Units['m/s'] 
     segment.air_speed_end             = 1. * Units['m/s']  
-    segment.heading = 315
+    segment.true_course = 270*Units.degrees
     segment.state.unknowns.throttle   = 0.8  * ones_row(1)  
     segment = vehicle.base.networks.battery_propeller.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)
 
     
-    
-    
+
     
     # ------------------------------------------------------------------
     #   vertical approach Segment: hover descent
@@ -152,9 +175,8 @@ def base(analyses,vehicle):
     segment.altitude_start = 20 *Units.ft    
     segment.altitude_end = 0.0   * Units.ft
     segment.air_speed    = 1 * Units['m/s']
+    segment.true_course = 270*Units.degrees
     segment.descent_rate = 4.5   * Units['m/s']
-    segment.heading_start = 180.0  # initial heading in degrees
-    segment.heading_end = 180.0  # final heading in degrees
     segment.state.unknowns.throttle          = 0.9  * ones_row(1)  
 
 
