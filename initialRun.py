@@ -100,23 +100,29 @@ def noise_calc(nexus):
     
     with open('results.pkl','wb') as f:
         pickle.dump(nexus.results,f)
-        
-        
-    
- 
-   
+
     return nexus
 
 def groundTrackplot(nexus):
     data = nexus.results
+    
+    mData = data.segments[0].analyses.noise.settings.ground_microphone_locations
+    mx = mData[:,0]
+    my = mData[:,1]
+    
     positionData =[]
     for segment in data.segments:
         positionData.append(segment.conditions.frames.inertial.position_vector)
         
     x_coords = np.array([arr[:,0] for arr in positionData]).flatten()
     y_coords = np.array([arr[:,1] for arr in positionData]).flatten()
-    z_coords = np.array([arr[:,2] for arr in positionData]).flatten()
-    plt.scatter(x_coords, y_coords)
+
+    
+    fig, ax = plt.subplots()
+    ax.scatter(x_coords, y_coords, color='blue')
+    ax.scatter(mx, my, color='red')
+    
+    
 
     # set the plot title and labels
     plt.title("Position Plot")
