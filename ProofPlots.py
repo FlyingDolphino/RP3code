@@ -40,6 +40,10 @@ def resultProcessing():
         flightPath.append(segment.conditions.frames.inertial.position_vector)        
     x_coords = np.array([arr[:,0] for arr in flightPath]).flatten()
     y_coords = np.array([arr[:,1] for arr in flightPath]).flatten()
+    z_coords = np.array([arr[:,2] for arr in flightPath]).flatten()
+    
+    trajectory = np.stack((x_coords,y_coords,z_coords),axis=1)
+    
 
 
     #grid assembly
@@ -58,6 +62,8 @@ def resultProcessing():
     q3SPL =[]
     q4SPL = []
     
+    
+
     for segment in q1.segments:
             for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
                 q1SPL.append(segment.conditions.noise.total_SPL_dBA[i])
@@ -73,29 +79,80 @@ def resultProcessing():
     for segment in q4.segments:
             for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
                 q4SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                
+                
     
-    fullSPL = []
+    #this needs changing
+    fullSPL = np.zeros((len(q1SPL),2*N_gm_x,2*N_gm_y))  
     for i in range(0,len(q1SPL)):
-        fullSPL.append(np.concatenate((q1SPL[i],q2SPL[i],q3SPL[i],q4SPL[i])))
-        
-    
+       
+        fullSPL[i,0:N_gm_x,0:N_gm_y] =q1SPL[i].reshape(N_gm_x,N_gm_y)
+        fullSPL[i,N_gm_x:,0:N_gm_y] = q2SPL[i].reshape(N_gm_x,N_gm_y)
+        fullSPL[i,0:N_gm_x,N_gm_y:] = q3SPL[i].reshape(N_gm_x,N_gm_y)
+        fullSPL[i,N_gm_x:,N_gm_y:]  = q4SPL[i].reshape(N_gm_x,N_gm_y)
+            
+
+
     X,Y, splData = gridSetup(N_gm_x, N_gm_y, gridX, gridY, fullSPL)
     
     
     #plotting function calls
-    groundTrackplot(x_coords,y_coords,gridX,gridY)
-    dBA_max_plot(X,Y,splData)
+    groundTrackplot(trajectory,gridX,gridY)
+    #dBA_max_plot(X,Y,splData)
+    #timeStepPlot(X, Y, splData,5)
+    cool3dPlot(X, Y, splData,trajectory)
 
 
 
 
 
 
+def cool3dPlot(X,Y,Z,trajectory):
+    # Define the functions to plot
+        #from import of Z
+    
+    # Define the grid of points to plot
+        #from import X and Y
+    X,Y = np.meshgrid(X,Y)
 
-def groundTrackplot(x_coords,y_coords,gridX,gridY):
+    # Create the figure and 3D axes
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    levs   = np.linspace(33,70,33)
+    
+    # Create a slider widget
+    axcolor = 'lightgoldenrodyellow'
+    slider_ax = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
+    slider = Slider(slider_ax, 'Function', 0, 19, valinit=0, valstep=1)
+    
+    # Define the point to plot
+    
+    
+    
+    # Define the function to update the plot
+    def update(val):
+        ax.clear()
+        ax.plot_surface(X, Y, Z[val], cmap='coolwarm')
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        ax.scatter(trajectory[val,0],trajectory[val,1],trajectory[val,2], color='black',levels = levs)
+        ax.text(trajectory[val,0],trajectory[val,1],trajectory[val,2],  '%s' % (" 10,000"), size=20, zorder=1,  
+        color='k') 
+    
+    # Attach the update function to the slider
+    slider.on_changed(update)
+    
+    # Show the plot
+    plt.show()
+    
+
+
+
+def groundTrackplot(trajectory,gridX,gridY):
     
     fig, ax = plt.subplots()
-    ax.scatter(x_coords, y_coords, color='blue')
+    ax.scatter(trajectory[:,0], trajectory[:,1], color='blue')
     ax.scatter(gridX, gridY, color='red')
     
     # set the plot title and labels
@@ -109,25 +166,6 @@ def groundTrackplot(x_coords,y_coords,gridX,gridY):
 
     return 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-####SINGLE QUADDRANT CODE
-
-#import results
-with open('results.pkl','rb') as f:
-    results = pickle.load(f)
     
 def gridSetup(N_gm_x,N_gm_y,mx,my,zVals):
   
@@ -137,9 +175,6 @@ def gridSetup(N_gm_x,N_gm_y,mx,my,zVals):
     mx = np.sort(mx)
     my = np.sort(my)
     
-                
-    for i in range(0,len(zVals)):
-        zVals[i] = zVals[i].reshape(sizeX,sizeY)
     
     X = []
     for i in range(0,len(mx),N_gm_x*2):
@@ -149,8 +184,9 @@ def gridSetup(N_gm_x,N_gm_y,mx,my,zVals):
     for i in range(0,len(my),N_gm_x*2):
         Y.append(my[i])
       
-    X = np.flip(X,axis=0)
-    Y = np.flip(Y,axis=0)
+
+    
+
     
     return X,Y,zVals
 
@@ -160,15 +196,14 @@ def timeStepPlot(X, Y, zVals, timestep):
     fig, ax = plt.subplots()
 
     # Set x and y axis limits
-    ax.set_xlim([X.min(), X.max()])
-    ax.set_ylim([Y.min(), Y.max()])
-    
+    ax.set_xlim([np.min(X), np.max(X)])
+    ax.set_ylim([np.min(Y), np.max(Y)])
     # Set up color map
     cmap = plt.get_cmap('coolwarm')
     
     
-    # Plot heatmap for current timestep
-    im = ax.pcolormesh(X,Y,zVals[1], cmap=cmap, shading='auto')
+    levs   = np.linspace(33,70,33)
+    im = ax.contourf(X , Y,zVals[timestep],levels = levs,  cmap=plt.cm.jet, extend='both') 
         
      # Set title and color bar label
     ax.set_title(f'Timestep {timestep}')
@@ -180,17 +215,17 @@ def timeStepPlot(X, Y, zVals, timestep):
     return
 
 def dBA_max_plot(X,Y,zVals):
-    maxdBA = np.amax(zVals, axis=0)
     
+    maxdBA = np.amax(zVals, axis=0)
     fig, ax = plt.subplots()
 
     # Set x and y axis limits
-    ax.set_xlim([X.min(), X.max()])
-    ax.set_ylim([Y.min(), Y.max()])
+    ax.set_xlim([np.min(X), np.max(X)])
+    ax.set_ylim([np.min(Y), np.max(Y)])
     
     # Set up color map
-    cmap = plt.get_cmap('coolwarm')
-    im = ax.pcolormesh(X,Y,maxdBA, cmap=cmap, shading='auto')
+    levs   = np.linspace(33,70,33)
+    im = ax.contourf(X , Y,maxdBA,levels = levs,  cmap=plt.cm.jet, extend='both') 
     ax.set_title('microphone maximum dBAs')
     cbar = fig.colorbar(im, ax=ax)
     cbar.ax.set_ylabel('max dBA')

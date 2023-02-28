@@ -21,8 +21,7 @@ import pylab as plt
 def main():
     
     problem = setup()
-    
-    
+
     return
 
 def setup():
@@ -69,9 +68,9 @@ def setup():
     # [ 'alias' , ['data.path1.name','data.path2.name'] ]
 
     problem.aliases = [
-        [ 'speed'                        ,  'missions.base.segments.initial_approach.altitude_end','missions.base.segments.final_approach.altitude_end'],
+        [ 'speed'                        ,  'missions.base.segments.initial_approach.air_speed','missions.base.segments.turn_to_final.air_speed','missions.base.segments.final_approach.air_speed','missions.base.segments.Descent_Transition.air_speed_start'],
         [ 'approach_rate'                  , 'missions.base.segments.final_approach.descent_rate'    ],
-        [ 'height_of_Vertical'                        ,    'missions.base.segments.final_approach.segment.heading_end' ],
+        [ 'height_of_Vertical'                        ,    'missions.base.segments.Descent_Transition.altitude','missions.base.segments.vertical_landing.altitude_start' ],
         [ 'angle_to_final'         ,    'missions.base.segments.initial_approach.true_course'    ],
     ]    
     

@@ -53,17 +53,17 @@ nexus.procedure = Procedure.setup()
 def noise_calc(nexus):
     
             
-    N_gm_x = 3 #number of microphones 
-    N_gm_y = 3
+    N_gm_x = 5 #number of microphones 
+    N_gm_y = 5
     
     #defines the max and min positions of the microphone grid
-    max_x = 1 *Units.nmi
-    min_x = -1 *Units.nmi
-    max_y = 1 *Units.nmi
-    min_y = -1 *Units.nmi
+    max_x = 3 *Units.nmi
+    min_x = -3 *Units.nmi
+    max_y = 3 *Units.nmi
+    min_y = -3 *Units.nmi
     
-    spacingx = (max_x-min_x)/N_gm_x
-    spacingy = (max_y-min_y)/N_gm_y
+    spacingx = (max_x-min_x)/(N_gm_x+1)
+    spacingy = (max_y-min_y)/(N_gm_y+1)
     
     
     #sets up the analysis
@@ -97,13 +97,27 @@ def noise_calc(nexus):
     for i in range(len(x_limit)-1):
         for j in range(len(y_limit)-1):
             print('Processing Quadrant: '+str(Q_no))
+               
             min_x = x_limit[i]
             max_x = x_limit[i+1]
             min_y = y_limit[j]
             max_y = y_limit[j+1]
          
+            if Q_no ==2:
+                max_y += spacingy
+                min_y += spacingy
+            elif Q_no==3:
+                max_x += spacingx
+                min_x += spacingx
+            elif Q_no == 4:
+                max_y += spacingy
+                min_y += spacingy
+                max_x += spacingx
+                min_x += spacingx
+
+            
             #sets up and runs the analysis with the noise simulation
-            configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,True)
+            configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,True) 
             noise_mission = Missions.setup(configs_analyses,configs)
             configs.finalize()
             configs_analyses.finalize()
