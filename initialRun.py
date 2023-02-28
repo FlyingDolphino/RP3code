@@ -53,18 +53,15 @@ nexus.procedure = Procedure.setup()
 def noise_calc(nexus):
     
             
-    N_gm_x = 5 #number of microphones 
-    N_gm_y = 5
+    N_gm_x = 3 #number of microphones 
+    N_gm_y = 3
     
     #defines the max and min positions of the microphone grid
-    max_x = 3 *Units.nmi
-    min_x = -3 *Units.nmi
-    max_y = 3 *Units.nmi
-    min_y = -3 *Units.nmi
-    
-    spacingx = (max_x-min_x)/(N_gm_x+1)
-    spacingy = (max_y-min_y)/(N_gm_y+1)
-    
+    max_x = 1 *Units.nmi
+    min_x = -1 *Units.nmi
+    max_y = 1 *Units.nmi
+    min_y = -1 *Units.nmi
+
     
     #sets up the analysis
     configs = nexus.vehicle_configurations
@@ -90,31 +87,55 @@ def noise_calc(nexus):
     max_y +=y_center
     min_y += y_center
     
-    y_limit = np.linspace(min_y,max_y,3)
-    x_limit = np.linspace(min_x,max_x,3)
+    y_limit = np.linspace(min_y,max_y,4)
+    x_limit = np.linspace(min_x,max_x,4)
+    
+    spacingx = (x_limit[1]-x_limit[0])/(N_gm_x-1)
+    spacingy = (y_limit[1]-y_limit[0])/(N_gm_y-1)
+    
     Q_no = 1
     
     for i in range(len(x_limit)-1):
         for j in range(len(y_limit)-1):
-            print('Processing Quadrant: '+str(Q_no))
+            print('Processing Segment: '+str(Q_no))
                
             min_x = x_limit[i]
             max_x = x_limit[i+1]
             min_y = y_limit[j]
             max_y = y_limit[j+1]
-         
-            if Q_no ==2:
-                max_y += spacingy
-                min_y += spacingy
+            
+            if Q_no ==1:
+                max_y -= spacingy
+                min_y -= spacingy
+                max_x -= spacingx
+                min_x -= spacingx
+            elif Q_no ==2:
+                max_x -= spacingx
+                min_x -= spacingx
             elif Q_no==3:
+                max_x -= spacingx
+                min_x -= spacingx
+                max_y -= spacingy
+                min_y -= spacingy
+            elif Q_no == 4:
+                max_y -= spacingy
+                min_y -= spacingy
+            elif Q_no == 6:
+                max_y += spacingy
+                min_y += spacingy
+            elif Q_no == 7:
                 max_x += spacingx
                 min_x += spacingx
-            elif Q_no == 4:
+                max_y -= spacingy
+                min_y -= spacingy
+            elif Q_no == 8:
+                max_x += spacingx
+                min_x += spacingx
+            elif Q_no ==9:
                 max_y += spacingy
                 min_y += spacingy
                 max_x += spacingx
                 min_x += spacingx
-
             
             #sets up and runs the analysis with the noise simulation
             configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,True) 
