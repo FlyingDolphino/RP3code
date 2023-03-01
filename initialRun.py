@@ -53,14 +53,14 @@ nexus.procedure = Procedure.setup()
 def noise_calc(nexus):
     
             
-    N_gm_x = 3 #number of microphones 
-    N_gm_y = 3
+    N_gm_x = 5 #number of microphones 
+    N_gm_y = 5
     
     #defines the max and min positions of the microphone grid
-    max_x = 1 *Units.nmi
-    min_x = -1 *Units.nmi
-    max_y = 1 *Units.nmi
-    min_y = -1 *Units.nmi
+    max_x = 4 *Units.nmi
+    min_x = -2 *Units.nmi
+    max_y = 2 *Units.nmi
+    min_y = -4*Units.nmi
 
     
     #sets up the analysis
@@ -115,8 +115,8 @@ def noise_calc(nexus):
             elif Q_no==3:
                 max_x -= spacingx
                 min_x -= spacingx
-                max_y -= spacingy
-                min_y -= spacingy
+                max_y += spacingy
+                min_y += spacingy
             elif Q_no == 4:
                 max_y -= spacingy
                 min_y -= spacingy
@@ -154,36 +154,6 @@ def noise_calc(nexus):
                 pickle.dump(nexus.results,f)
             Q_no +=1
     return nexus
-
-def groundTrackplot(nexus):
-    data = nexus.results
-    
-    mData = data.segments[0].analyses.noise.settings.ground_microphone_locations
-    mx = mData[:,0]
-    my = mData[:,1]
-    
-    positionData =[]
-    for segment in data.segments:
-        positionData.append(segment.conditions.frames.inertial.position_vector)
-        
-    x_coords = np.array([arr[:,0] for arr in positionData]).flatten()
-    y_coords = np.array([arr[:,1] for arr in positionData]).flatten()
-
-    
-    fig, ax = plt.subplots()
-    ax.scatter(x_coords, y_coords, color='blue')
-    ax.scatter(mx, my, color='red')
-    
-    
-
-    # set the plot title and labels
-    plt.title("Position Plot")
-    plt.xlabel("X Coordinate")
-    plt.ylabel("Y Coordinate")
-    plt.axis('equal')
-
-    # show the plot
-    plt.show()
 
 
 noise_calc(nexus)

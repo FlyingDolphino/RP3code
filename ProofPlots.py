@@ -210,11 +210,11 @@ def gridSetup(N_gm_x,N_gm_y,mx,my,zVals):
     
     
     X = []
-    for i in range(0,len(mx),N_gm_x*2):
+    for i in range(0,len(mx),N_gm_x*3):
         X.append(mx[i])
         
     Y = []
-    for i in range(0,len(my),N_gm_x*2):
+    for i in range(0,len(my),N_gm_x*3):
         Y.append(my[i])
       
 

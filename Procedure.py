@@ -29,14 +29,14 @@ def setup():
 def noise_calc(nexus):
     
             
-    N_gm_x = 10 #resolution of microphones eg 10 per length in x
-    N_gm_y = 10
+    N_gm_x = 8 #resolution of microphones eg 10 per length in x
+    N_gm_y = 8
     
     #defines the max and min positions of the microphone grid
-    max_x = 5 *Units.nmi
-    min_x = -5 *Units.nmi
-    max_y = 5 *Units.nmi
-    min_y = 5 *Units.nmi
+    max_x = 7 *Units.nmi
+    min_x = -3 *Units.nmi
+    max_y = 3 *Units.nmi
+    min_y = -5 *Units.nmi
     
     
     #sets up the analysis
@@ -87,3 +87,8 @@ def post_process(nexus):
     
     
     return nexus
+
+
+def resultProcessing():
+    ##load results here
+    return
