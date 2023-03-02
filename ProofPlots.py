@@ -32,6 +32,8 @@ def resultProcessing():
     
     N_gm_x = q1.segments[0].analyses.noise.settings.level_ground_microphone_x_resolution 
     N_gm_y = q1.segments[0].analyses.noise.settings.level_ground_microphone_y_resolution
+    control_points = len(q1.segments[0].conditions.noise.total_SPL_dBA)
+    
     
     #load flight path
     flightPath =[]
@@ -71,46 +73,45 @@ def resultProcessing():
     q8SPL=[]
     q9SPL=[]
     
-
-
+    
     for segment in q1.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q1SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q2.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q2SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q3.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q3SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q4.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q4SPL.append(segment.conditions.noise.total_SPL_dBA[i])
             
     for segment in q5.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q5SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q6.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q6SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q7.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q7SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q8.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q8SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
     for segment in q9.segments:
-            for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+            for i in range(0,control_points):
                 q9SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-            
+                         
+                    
                 
-            
     fullSPL = np.zeros((len(q1SPL),3*N_gm_x,3*N_gm_y))  
     for i in range(0,len(q1SPL)):
        
@@ -122,7 +123,7 @@ def resultProcessing():
         fullSPL[i,2*N_gm_y:,N_gm_x:2*N_gm_x]  = q6SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
         fullSPL[i,0:N_gm_y,2*N_gm_x:]  = q7SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
         fullSPL[i,N_gm_y:2*N_gm_y,2*N_gm_x:]  = q8SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
-        fullSPL[i,2*N_gm_y:,2*N_gm_x:]  = q8SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
+        fullSPL[i,2*N_gm_y:,2*N_gm_x:]  = q9SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
         
         
         
@@ -249,7 +250,7 @@ def timeStepPlot(X, Y, zVals, timestep):
 
 def dBA_max_plot(X,Y,zVals,trajectory):
     
-    maxdBA = np.amax(zVals, axis=0)
+    maxdBA = np.nanmax(zVals, axis = 0)
     fig, ax = plt.subplots()
 
     # Set x and y axis limits
@@ -257,8 +258,8 @@ def dBA_max_plot(X,Y,zVals,trajectory):
     ax.set_ylim([np.min(Y), np.max(Y)])
     
     # Set up color map
-    levs   = np.linspace(33,70,33)
-    im = ax.contourf(X , Y,maxdBA,levels = levs,  cmap=plt.cm.jet, extend='both') 
+    levs   = np.linspace(30,50,40)
+    im = ax.contourf(X , Y,maxdBA, levels = levs,  cmap=plt.cm.jet, extend='max') 
     ax.scatter(trajectory[:,0], trajectory[:,1], color='Black')
     ax.set_title('microphone maximum dBAs')
     cbar = fig.colorbar(im, ax=ax)
