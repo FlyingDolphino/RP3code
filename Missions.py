@@ -53,7 +53,7 @@ def base(analyses,vehicle):
     # ------------------------------------------------------------------
 
     # base segment
-    control_points = 4
+    control_points = 10
     base_segment = Segments.Segment()
     base_segment.battery_discharge                           = True 
     ones_row  = base_segment.state.ones_row    
@@ -82,7 +82,7 @@ def base(analyses,vehicle):
  
     segment.altitude = 2000   * Units.feet
     segment.air_speed  = 10 * Units['m/s']
-    segment.distance   = 3. * Units.nautical_miles
+    segment.distance   = 2. * Units.nautical_miles
     segment.true_course = 90 *Units.degrees
     segment.state.unknowns.throttle          = 0.6  * ones_row(1) 
   
@@ -109,7 +109,7 @@ def base(analyses,vehicle):
     segment.altitude = 2000   * Units.feet
     segment.air_speed  = 10 * Units['m/s']
     segment.true_course = 180*Units.degrees
-    segment.distance   = 2. * Units.nautical_miles
+    segment.distance   = 1. * Units.nautical_miles
     segment.state.unknowns.throttle          = 0.6  * ones_row(1) 
   
 
