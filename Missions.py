@@ -53,7 +53,7 @@ def base(analyses,vehicle):
     # ------------------------------------------------------------------
 
     # base segment
-    control_points = 10
+    control_points = 4
     base_segment = Segments.Segment()
     base_segment.battery_discharge                           = True 
     ones_row  = base_segment.state.ones_row    
@@ -149,7 +149,7 @@ def base(analyses,vehicle):
    # ------------------------------------------------------------------
 
     segment                           = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
-    segment.tag                       = "Decent_Transition"  
+    segment.tag                       = "descent_transition"  
     segment.analyses.extend( analyses.vertical_transition) 
     segment.altitude                  = 20   * Units.ft
     segment.air_speed_start           = 10.  * Units['m/s'] 

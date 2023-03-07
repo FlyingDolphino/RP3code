@@ -13,7 +13,6 @@ import Missions
 import Procedure
 #import Plot_Mission
 import SUAVE.Optimization.Package_Setups.scipy_setup as scipy_setup
-import SUAVE.Optimization.Package_Setups.pyopt_setup as pyopt_setup
 from SUAVE.Optimization.Nexus import Nexus
 import pylab as plt
 
@@ -21,6 +20,10 @@ import pylab as plt
 def main():
     
     problem = setup()
+    output = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
+    print(output)
+    problem.translate(output)
+
 
     return
 
@@ -36,10 +39,8 @@ def setup():
 
     #   [ tag                   , initial,     lb , ub        , scaling , units ]
     problem.inputs = np.array([
-        [ 'speed'           ,  10    ,    5. ,   60.    ,   100.  , 1*Units.meter/Units.s],
-        [ 'approach_rate'     ,   152    ,     15. ,    243.    ,   100.   , 1*Units.meter/Units.s],
-        [  'height_of_Vertical'     ,20     ,   5.,      100.,    100.,1*Units.meter],
-        [   'angle_to_final'    ,   90,     0,      180,    100,    1*Units.degree],
+        [  'height_of_Vertical'     ,20     ,   5.,      35.,    10.,1*Units.meter],
+
     ],dtype=object)
 
     # -------------------------------------------------------------------
@@ -48,7 +49,7 @@ def setup():
 
     # [ tag, scaling, units ]
     problem.objective = np.array([
-        [ 'nothing', 1, 1*Units.kg ]
+        [ 'avgdBA', 10, 1*Units.less ]
     ],dtype=object)
     
     # -------------------------------------------------------------------
@@ -57,8 +58,8 @@ def setup():
     
     # [ tag, sense, edge, scaling, units ]
     problem.constraints = np.array([
-        [ 'Throttle_min' , '>', 0., 1, 1*Units.less],
-        [ 'Throttle_max' , '>',0, 1, 1*Units.less],
+        [ 'Throttle_min' , '>', 0.5, 0.4, 1*Units.less],
+        [ 'Throttle_max' , '>',1, 1, 1*Units.less],
     ],dtype=object)
     
     # -------------------------------------------------------------------
@@ -70,8 +71,11 @@ def setup():
     problem.aliases = [
         [ 'speed'                        ,  'missions.base.segments.initial_approach.air_speed','missions.base.segments.turn_to_final.air_speed','missions.base.segments.final_approach.air_speed','missions.base.segments.Descent_Transition.air_speed_start'],
         [ 'approach_rate'                  , 'missions.base.segments.final_approach.descent_rate'    ],
-        [ 'height_of_Vertical'                        ,    'missions.base.segments.Descent_Transition.altitude','missions.base.segments.vertical_landing.altitude_start' ],
+        [ 'height_of_Vertical'                        ,    'missions.base.segments.descent_transition.altitude','missions.base.segments.vertical_landing.altitude_start' ],
         [ 'angle_to_final'         ,    'missions.base.segments.initial_approach.true_course'    ],
+        [ 'Throttle_min'            ,   'summary.min_throttle'  ],
+        ['Throttle_max'                , 'summary.max_throttle'],
+        ['avgdBA'               ,       'summary.avgdBA']
     ]    
     
     
@@ -111,3 +115,7 @@ def setup():
     nexus.summary = Data()    
     nexus.total_number_of_iterations = 0
     return nexus
+
+
+if __name__ == '__main__':
+    main()

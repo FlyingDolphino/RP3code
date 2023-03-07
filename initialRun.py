@@ -54,8 +54,8 @@ nexus.procedure = Procedure.setup()
 def noise_calc(nexus):
     
             
-    N_gm_x = 7 #number of microphones 
-    N_gm_y = 7
+    N_gm_x = 2 #number of microphones 
+    N_gm_y = 2
     
     #defines the max and min positions of the microphone grid
     max_x = 3.6 *Units.nmi
