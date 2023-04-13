@@ -53,7 +53,7 @@ def base(analyses,vehicle):
     # ------------------------------------------------------------------
 
     # base segment
-    control_points = 8
+    control_points = 6
     base_segment = Segments.Segment()
     base_segment.battery_discharge                           = True 
     ones_row  = base_segment.state.ones_row    
@@ -81,7 +81,7 @@ def base(analyses,vehicle):
     segment.battery_energy = vehicle.base.networks.battery_propeller.battery.max_energy
  
     segment.altitude = 2000   * Units.feet
-    segment.air_speed  = 20 * Units['m/s']
+    segment.air_speed  = 10 * Units['m/s']
     segment.distance   = 2. * Units.nautical_miles
     segment.true_course = 180 *Units.degrees
     segment.state.unknowns.throttle          = 0.6  * ones_row(1) 
@@ -107,8 +107,8 @@ def base(analyses,vehicle):
     segment.battery_energy = vehicle.base.networks.battery_propeller.battery.max_energy
  
     segment.altitude = 2000   * Units.feet
-    segment.air_speed  = 20 * Units['m/s']
-    segment.true_course = 180*Units.degrees
+    segment.air_speed  = 10 * Units['m/s']
+    segment.true_course = 275*Units.degrees
     segment.distance   = 1. * Units.nautical_miles
     segment.state.unknowns.throttle          = 0.6  * ones_row(1) 
   
@@ -129,10 +129,10 @@ def base(analyses,vehicle):
     
      
     segment.altitude_start = 2000   *Units.feet
-    segment.air_speed  = 20 * Units['m/s']
-    segment.descent_rate = 2   * Units['m/s']
-    segment.true_course = 180*Units.degrees
-    segment.altitude_end = 100   * Units.ft
+    segment.air_speed  = 10 * Units['m/s']
+    segment.descent_rate = 4.5   * Units['m/s']
+    segment.true_course = 360*Units.degrees
+    segment.altitude_end = 20.0   * Units.ft
     segment.state.unknowns.throttle          = 0.7  * ones_row(1)  
     segment.battery_pack_temperature                   = atmo.temperature[0,0]
 
@@ -151,10 +151,10 @@ def base(analyses,vehicle):
     segment                           = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
     segment.tag                       = "descent_transition"  
     segment.analyses.extend( analyses.vertical_transition) 
-    segment.altitude                  = 100   * Units.ft
-    segment.air_speed_start           = 20.  * Units['m/s'] 
+    segment.altitude                  = 20   * Units.ft
+    segment.air_speed_start           = 10.  * Units['m/s'] 
     segment.air_speed_end             = 1. * Units['m/s']  
-    segment.true_course = 180*Units.degrees
+    segment.true_course = 360*Units.degrees
     segment.state.unknowns.throttle   = 0.8  * ones_row(1)  
     segment = vehicle.base.networks.battery_propeller.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)
@@ -172,10 +172,10 @@ def base(analyses,vehicle):
     
     
     ones_row = segment.state.ones_row
-    segment.altitude_start = 100 *Units.ft    
+    segment.altitude_start = 20 *Units.ft    
     segment.altitude_end = 0.0   * Units.ft
     segment.air_speed    = 1 * Units['m/s']
-    segment.true_course = 180*Units.degrees
+    segment.true_course = 360*Units.degrees
     segment.descent_rate = 4.5   * Units['m/s']
     segment.state.unknowns.throttle          = 0.9  * ones_row(1)  
 

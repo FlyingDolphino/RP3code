@@ -42,9 +42,8 @@ def setup():
         [  'speed'     ,10     ,   10,      20.,    10.,1*Units['m/s']],
         [ 'approach_rate'     ,  2    ,   2. ,    8.    ,   10.   , 1*Units['m/s']],
         [  'height_of_Vertical'     ,5     ,   5.,      100.,    100.,1*Units.ft],
-        [   'angle_to_base'    ,   200,     180,      360,    100,    1*Units.degree],
-        [   'angle_to_final'    ,   200,     180,      360,    100,    1*Units.degree]
     ],dtype=object)
+
 
     # -------------------------------------------------------------------
     # Objective
@@ -75,8 +74,6 @@ def setup():
         [ 'speed'                        ,  ['missions.base.segments.initial_approach.air_speed','missions.base.segments.turn_to_final.air_speed','missions.base.segments.final_approach.air_speed','missions.base.segments.descent_transition.air_speed_start']],
         [ 'approach_rate'                  , 'missions.base.segments.final_approach.descent_rate'    ],
         [ 'height_of_Vertical'                        ,  [  'missions.base.segments.descent_transition.altitude','missions.base.segments.vertical_landing.altitude_start','missions.base.segments.final_approach.altitude_end ']],
-        [ 'angle_to_base'         ,    'missions.base.segments.turn_to_final.true_course'    ],
-        ['angle_to_final'           ,     'missions.base.segments.final_approach.true_course','missions.base.segments.descent_transition.true_course','missions.base.segments.vertical_landing.true_course'],
         [ 'Throttle_min'            ,   'summary.min_throttle'  ],
         ['Throttle_max'                , 'summary.max_throttle'],
         ['avgdBA'               ,       'summary.avgdBA']

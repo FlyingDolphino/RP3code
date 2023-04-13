@@ -197,6 +197,8 @@ def groundTrackplot(trajectory,gridX,gridY):
 
     # show the plot
     plt.show()
+    
+    plt.savefig('Groundplot'+'.pdf')
 
     return 
 
@@ -267,8 +269,8 @@ def dBA_max_plot(X,Y,zVals,trajectory):
         
         # Show plot
     plt.show()
+    plt.savefig(f'dbaplot'+'.pdf')
     return
-
 
 
 

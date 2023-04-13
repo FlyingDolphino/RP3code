@@ -15,6 +15,7 @@ import Analyses
 import Missions
 import Procedure
 import ProofPlots
+from SUAVE.Optimization.write_optimization_outputs import write_optimization_outputs
 import pickle
 
 def setup():
@@ -30,8 +31,8 @@ def setup():
 def noise_calc(nexus):
     
             
-    N_gm_x = 2 #number of microphones 
-    N_gm_y = 2
+    N_gm_x = 4 #number of microphones 
+    N_gm_y = 4
     
     #defines the max and min positions of the microphone grid
     max_x = 3.6 *Units.nmi
@@ -43,14 +44,17 @@ def noise_calc(nexus):
     #sets up the analysis
     configs = nexus.vehicle_configurations
     configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,False) #Running the analysis without the noise simulation
-    mission = Missions.setup(configs_analyses,configs)
-    configs.finalize()
-    configs_analyses.finalize()
-    mission.finalize()
+    missionUpdate = Missions.setup(configs_analyses,configs)
+    missionUpdate = updateMissionWithOptimiseValues(nexus,missionUpdate)
+
+    nexus.missions = missionUpdate
+    nexus.analyses = configs_analyses
+    nexus.analyses.finalize()
+    mission = nexus.missions.base
     print('Evaluating position mission')
     positionResults = mission.evaluate()
     print('Done')
-    final_position_vector = positionResults.base.segments[-1].conditions.frames.inertial.position_vector
+    final_position_vector = positionResults.segments[-1].conditions.frames.inertial.position_vector
 
     #centralises the microphone grid on the end position of the aircraft
     x_center = final_position_vector[-1][0]
@@ -112,13 +116,16 @@ def noise_calc(nexus):
             
             #sets up and runs the analysis with the noise simulation
             configs_analyses = Analyses.setup(configs,N_gm_x,N_gm_y,min_y,max_y,min_x,max_x,True) 
-            noise_mission = Missions.setup(configs_analyses,configs)
-            configs.finalize()
-            configs_analyses.finalize()
-            noise_mission.finalize()
-            
+            missionUpdate = Missions.setup(configs_analyses,nexus.vehicle_configurations)
+            missionUpdate = updateMissionWithOptimiseValues(nexus,missionUpdate)  
+
+            nexus.missions = missionUpdate
+            nexus.analyses = configs_analyses
+            noise_mission = nexus.missions.base
+            nexus.analyses.finalize()
             nexus.results = noise_mission.evaluate()
-            nexus.results = nexus.results.base
+            
+
             print('done')
             
             
@@ -131,11 +138,23 @@ def noise_calc(nexus):
 
 
 def post_process(nexus):
+    nexus.total_number_of_iterations +=1
+     
     SPLdata, micro = resultsProcessing()
-    maxdBA = np.nanmax(SPLdata, axis=0)
+
     res = nexus.results
     
-    avg = (maxdBA.sum())/micro
+    rms_array = np.sqrt(np.nanmean(SPLdata, axis=0))
+
+        
+    avg = rms_array.sum()/micro
+    
+    
+    
+    
+    
+    
+    
     
     summary = nexus.summary
     max_throttle = 0
@@ -152,6 +171,9 @@ def post_process(nexus):
     summary.max_throttle = max_throttle
     summary.min_throttle = min_throttle
     summary.avgdBA = avg
+    filename = 'results.txt'
+    write_optimization_outputs(nexus, filename)
+    print(avg)
     
     return nexus
 
@@ -195,39 +217,39 @@ def resultsProcessing():
     
     for segment in q1.segments:
             for i in range(0,control_points):
-                q1SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q1SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q2.segments:
             for i in range(0,control_points):
-                q2SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q2SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q3.segments:
             for i in range(0,control_points):
-                q3SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q3SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q4.segments:
             for i in range(0,control_points):
-                q4SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q4SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
             
     for segment in q5.segments:
             for i in range(0,control_points):
-                q5SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q5SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q6.segments:
             for i in range(0,control_points):
-                q6SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q6SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q7.segments:
             for i in range(0,control_points):
-                q7SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q7SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q8.segments:
             for i in range(0,control_points):
-                q8SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q8SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                 
     for segment in q9.segments:
             for i in range(0,control_points):
-                q9SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                q9SPL.append(segment.conditions.noise.total_SPL_dBA[i]**2)
                          
             
     fullSPL = np.zeros((len(q1SPL),3*N_gm_x,3*N_gm_y))  
@@ -245,3 +267,37 @@ def resultsProcessing():
         
         
     return fullSPL, micro
+
+def updateMissionWithOptimiseValues(nexus,mission):
+    #get speed and approach rate from nexus
+
+
+    speed = nexus.missions.base.segments.initial_approach.air_speed
+    approach_rate = nexus.missions.base.segments.final_approach.descent_rate
+    verticalHeight = nexus.missions.base.segments.vertical_landing.altitude_start
+    turn_to_base = nexus.missions.base.segments.turn_to_final.true_course
+    turn_to_final = nexus.missions.base.segments.final_approach.true_course
+    
+    
+    
+    
+    mission.base.segments.initial_approach.air_speed = speed
+    mission.base.segments.turn_to_final.air_speed=  speed
+    mission.base.segments.final_approach.air_speed= speed
+    mission.base.segments.descent_transition.air_speed_start= speed 
+    mission.base.segments.final_approach.descent_rate = approach_rate
+    mission.base.segments.vertical_landing.altitude_start = verticalHeight
+    mission.base.segments.descent_transition.altitude = verticalHeight
+    mission.base.segments.final_approach.altitude_end = verticalHeight
+    mission.base.segments.turn_to_final.true_course = turn_to_base
+    mission.base.segments.final_approach.true_course = turn_to_final
+    mission.base.segments.descent_transition.true_course = turn_to_final
+    mission.base.segments.vertical_landing.true_course = turn_to_final
+    
+    print('Optimiser input :speed: ',speed)
+    print('Optimiser input :approach rate: ',approach_rate)
+    print('Optimiser input :Hover Height ',verticalHeight)
+    print('Optimiser input :turn to base ',turn_to_base)
+    print('Optimiser input:turn to final',turn_to_final)
+
+    return mission

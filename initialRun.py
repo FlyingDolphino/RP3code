@@ -29,8 +29,8 @@ nexus.vehicle_configurations = Vehicles.setup()
     #  Analyses
     # -------------------------------------------------------------------
     
-N_gm_x           = 10
-N_gm_y           = 5
+N_gm_x           = 6
+N_gm_y           = 6
     
 min_y = 1E-3 
 max_y = 0.25*Units.nmi
@@ -54,14 +54,14 @@ nexus.procedure = Procedure.setup()
 def noise_calc(nexus):
     
             
-    N_gm_x = 2 #number of microphones 
-    N_gm_y = 2
+    N_gm_x = 4 #number of microphones 
+    N_gm_y = 4
     
     #defines the max and min positions of the microphone grid
-    max_x = 3.6 *Units.nmi
-    min_x = -1.8 *Units.nmi
-    max_y = 2 *Units.nmi
-    min_y = -3.4*Units.nmi
+    max_x = 5*Units.nmi
+    min_x = -5 *Units.nmi
+    max_y = 5*Units.nmi
+    min_y = -5*Units.nmi
 
     
     #sets up the analysis
