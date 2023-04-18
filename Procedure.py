@@ -14,7 +14,6 @@ import Vehicles
 import Analyses
 import Missions
 import Procedure
-import ProofPlots
 from SUAVE.Optimization.write_optimization_outputs import write_optimization_outputs
 import pickle
 
@@ -35,10 +34,10 @@ def noise_calc(nexus):
     N_gm_y = 4
     
     #defines the max and min positions of the microphone grid
-    max_x = 3.6 *Units.nmi
-    min_x = -1.8 *Units.nmi
-    max_y = 2 *Units.nmi
-    min_y = -3.4*Units.nmi
+    max_x = 5 *Units.nmi
+    min_x = -5 *Units.nmi
+    max_y = 5 *Units.nmi
+    min_y = -5*Units.nmi
 
     
     #sets up the analysis

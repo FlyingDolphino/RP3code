@@ -1,0 +1,5 @@
+Speed: 20ms
+Descent rate = 2ms
+Hover height = 100ft
+angle to base = 311.143076656
+angle to final = 360

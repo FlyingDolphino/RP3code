@@ -10,125 +10,157 @@ import math
     
 ######MULTI QUADDRANT CODE
 
-def resultProcessing():
-    #Loads each quaddrant
-    
-    raw_data =[]
-    for i in range (1,10):
-        with open('resultsQ'+str((i)), 'rb') as f:
-            temp = pickle.load(f)
-            raw_data.append(temp)
-     
+def resultProcessing(multi):
+    if multi == True:
             
-    q1 = raw_data[0]
-    q2 = raw_data[1]
-    q3 = raw_data[2]
-    q4 = raw_data[3]
-    q5 = raw_data[4]
-    q6 = raw_data[5]
-    q7 = raw_data[6]
-    q8 = raw_data[7]
-    q9 = raw_data[8]
+        #Loads each quaddrant
     
-    N_gm_x = q1.segments[0].analyses.noise.settings.level_ground_microphone_x_resolution 
-    N_gm_y = q1.segments[0].analyses.noise.settings.level_ground_microphone_y_resolution
-    control_points = len(q1.segments[0].conditions.noise.total_SPL_dBA)
-    
-    
-    #load flight path
-    flightPath =[]
-    for segment in q1.segments:
-        flightPath.append(segment.conditions.frames.inertial.position_vector)        
-    x_coords = np.array([arr[:,0] for arr in flightPath]).flatten()
-    y_coords = np.array([arr[:,1] for arr in flightPath]).flatten()
-    z_coords = np.array([arr[:,2] for arr in flightPath]).flatten()
-    
-    trajectory = np.stack((x_coords,y_coords,z_coords),axis=1)
-    
-
-
-    #grid assembly
-    q1Grid = q1.segments[0].analyses.noise.settings.ground_microphone_locations
-    q2Grid = q2.segments[0].analyses.noise.settings.ground_microphone_locations
-    q3Grid = q3.segments[0].analyses.noise.settings.ground_microphone_locations
-    q4Grid = q4.segments[0].analyses.noise.settings.ground_microphone_locations
-    q5Grid = q5.segments[0].analyses.noise.settings.ground_microphone_locations
-    q6Grid = q6.segments[0].analyses.noise.settings.ground_microphone_locations
-    q7Grid = q7.segments[0].analyses.noise.settings.ground_microphone_locations
-    q8Grid = q8.segments[0].analyses.noise.settings.ground_microphone_locations
-    q9Grid = q9.segments[0].analyses.noise.settings.ground_microphone_locations
-    
-    gridX = np.concatenate((q1Grid[:, 0], q2Grid[:, 0], q3Grid[:, 0], q4Grid[:, 0],q5Grid[:, 0],q6Grid[:, 0],q7Grid[:, 0],q8Grid[:, 0],q9Grid[:, 0]))
-    gridY = np.concatenate((q1Grid[:, 1], q2Grid[:, 1], q3Grid[:, 1], q4Grid[:, 1],q5Grid[:, 1],q6Grid[:, 1],q7Grid[:, 1],q8Grid[:, 1],q9Grid[:, 1]))
-    
-    
-    #SPL data formating
-    q1SPL =[]
-    q2SPL = []
-    q3SPL =[]
-    q4SPL = []
-    q5SPL = []
-    q6SPL =[]
-    q7SPL=[]
-    q8SPL=[]
-    q9SPL=[]
-    
-    
-    for segment in q1.segments:
-            for i in range(0,control_points):
-                q1SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+        raw_data =[]
+        for i in range (1,10):
+            with open('resultsQ'+str((i)), 'rb') as f:
+                temp = pickle.load(f)
+                raw_data.append(temp)
+         
                 
-    for segment in q2.segments:
-            for i in range(0,control_points):
-                q2SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                
-    for segment in q3.segments:
-            for i in range(0,control_points):
-                q3SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                
-    for segment in q4.segments:
-            for i in range(0,control_points):
-                q4SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-            
-    for segment in q5.segments:
-            for i in range(0,control_points):
-                q5SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                
-    for segment in q6.segments:
-            for i in range(0,control_points):
-                q6SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                
-    for segment in q7.segments:
-            for i in range(0,control_points):
-                q7SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                
-    for segment in q8.segments:
-            for i in range(0,control_points):
-                q8SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                
-    for segment in q9.segments:
-            for i in range(0,control_points):
-                q9SPL.append(segment.conditions.noise.total_SPL_dBA[i])
-                         
+        q1 = raw_data[0]
+        q2 = raw_data[1]
+        q3 = raw_data[2]
+        q4 = raw_data[3]
+        q5 = raw_data[4]
+        q6 = raw_data[5]
+        q7 = raw_data[6]
+        q8 = raw_data[7]
+        q9 = raw_data[8]
+        
+        N_gm_x = q1.segments[0].analyses.noise.settings.level_ground_microphone_x_resolution 
+        N_gm_y = q1.segments[0].analyses.noise.settings.level_ground_microphone_y_resolution
+        control_points = len(q1.segments[0].conditions.noise.total_SPL_dBA)
+        
+        
+        #load flight path
+        flightPath =[]
+        for segment in q1.segments:
+            flightPath.append(segment.conditions.frames.inertial.position_vector)        
+        x_coords = np.array([arr[:,0] for arr in flightPath]).flatten()
+        y_coords = np.array([arr[:,1] for arr in flightPath]).flatten()
+        z_coords = np.array([arr[:,2] for arr in flightPath]).flatten()
+        
+        trajectory = np.stack((x_coords,y_coords,z_coords),axis=1)
+        
+    
+    
+        #grid assembly
+        q1Grid = q1.segments[0].analyses.noise.settings.ground_microphone_locations
+        q2Grid = q2.segments[0].analyses.noise.settings.ground_microphone_locations
+        q3Grid = q3.segments[0].analyses.noise.settings.ground_microphone_locations
+        q4Grid = q4.segments[0].analyses.noise.settings.ground_microphone_locations
+        q5Grid = q5.segments[0].analyses.noise.settings.ground_microphone_locations
+        q6Grid = q6.segments[0].analyses.noise.settings.ground_microphone_locations
+        q7Grid = q7.segments[0].analyses.noise.settings.ground_microphone_locations
+        q8Grid = q8.segments[0].analyses.noise.settings.ground_microphone_locations
+        q9Grid = q9.segments[0].analyses.noise.settings.ground_microphone_locations
+        
+        gridX = np.concatenate((q1Grid[:, 0], q2Grid[:, 0], q3Grid[:, 0], q4Grid[:, 0],q5Grid[:, 0],q6Grid[:, 0],q7Grid[:, 0],q8Grid[:, 0],q9Grid[:, 0]))
+        gridY = np.concatenate((q1Grid[:, 1], q2Grid[:, 1], q3Grid[:, 1], q4Grid[:, 1],q5Grid[:, 1],q6Grid[:, 1],q7Grid[:, 1],q8Grid[:, 1],q9Grid[:, 1]))
+        
+        
+        #SPL data formating
+        q1SPL =[]
+        q2SPL = []
+        q3SPL =[]
+        q4SPL = []
+        q5SPL = []
+        q6SPL =[]
+        q7SPL=[]
+        q8SPL=[]
+        q9SPL=[]
+        
+        
+        for segment in q1.segments:
+                for i in range(0,control_points):
+                    q1SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                     
+        for segment in q2.segments:
+                for i in range(0,control_points):
+                    q2SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                    
+        for segment in q3.segments:
+                for i in range(0,control_points):
+                    q3SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                    
+        for segment in q4.segments:
+                for i in range(0,control_points):
+                    q4SPL.append(segment.conditions.noise.total_SPL_dBA[i])
                 
-    fullSPL = np.zeros((len(q1SPL),3*N_gm_x,3*N_gm_y))  
-    for i in range(0,len(q1SPL)):
-       
-        fullSPL[i,0:N_gm_y,0:N_gm_x] =q1SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
-        fullSPL[i,N_gm_y:2*N_gm_y,0:N_gm_x] = q2SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
-        fullSPL[i,2*N_gm_y:,0:N_gm_x] = q3SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
-        fullSPL[i,0:N_gm_y,N_gm_x:2*N_gm_x]  = q4SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
-        fullSPL[i,N_gm_y:2*N_gm_y,N_gm_x:2*N_gm_x]  = q5SPL[i].reshape(N_gm_x,N_gm_y, order = "F")    
-        fullSPL[i,2*N_gm_y:,N_gm_x:2*N_gm_x]  = q6SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
-        fullSPL[i,0:N_gm_y,2*N_gm_x:]  = q7SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
-        fullSPL[i,N_gm_y:2*N_gm_y,2*N_gm_x:]  = q8SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
-        fullSPL[i,2*N_gm_y:,2*N_gm_x:]  = q9SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
+        for segment in q5.segments:
+                for i in range(0,control_points):
+                    q5SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                    
+        for segment in q6.segments:
+                for i in range(0,control_points):
+                    q6SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                    
+        for segment in q7.segments:
+                for i in range(0,control_points):
+                    q7SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                    
+        for segment in q8.segments:
+                for i in range(0,control_points):
+                    q8SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                    
+        for segment in q9.segments:
+                for i in range(0,control_points):
+                    q9SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+                             
+                        
+                    
+        fullSPL = np.zeros((len(q1SPL),3*N_gm_x,3*N_gm_y))  
+        for i in range(0,len(q1SPL)):
+           
+            fullSPL[i,0:N_gm_y,0:N_gm_x] =q1SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
+            fullSPL[i,N_gm_y:2*N_gm_y,0:N_gm_x] = q2SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
+            fullSPL[i,2*N_gm_y:,0:N_gm_x] = q3SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
+            fullSPL[i,0:N_gm_y,N_gm_x:2*N_gm_x]  = q4SPL[i].reshape(N_gm_x,N_gm_y, order = "F")
+            fullSPL[i,N_gm_y:2*N_gm_y,N_gm_x:2*N_gm_x]  = q5SPL[i].reshape(N_gm_x,N_gm_y, order = "F")    
+            fullSPL[i,2*N_gm_y:,N_gm_x:2*N_gm_x]  = q6SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
+            fullSPL[i,0:N_gm_y,2*N_gm_x:]  = q7SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
+            fullSPL[i,N_gm_y:2*N_gm_y,2*N_gm_x:]  = q8SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
+            fullSPL[i,2*N_gm_y:,2*N_gm_x:]  = q9SPL[i].reshape(N_gm_x,N_gm_y, order = "F") 
+            
+            
+            
+        X,Y, splData = gridSetup(N_gm_x, N_gm_y, gridX, gridY, fullSPL)
+    else:
+        with open('results', 'rb') as f:
+            res = pickle.load(f)
+            
         
+        N_gm_x = res.segments[0].analyses.noise.settings.level_ground_microphone_x_resolution 
+        N_gm_y = res.segments[0].analyses.noise.settings.level_ground_microphone_y_resolution
+        control_points = len(res.segments[0].conditions.noise.total_SPL_dBA)
         
+        flightPath =[]
+        for segment in res.segments:
+            flightPath.append(segment.conditions.frames.inertial.position_vector)        
+        x_coords = np.array([arr[:,0] for arr in flightPath]).flatten()
+        y_coords = np.array([arr[:,1] for arr in flightPath]).flatten()
+        z_coords = np.array([arr[:,2] for arr in flightPath]).flatten()
         
-    X,Y, splData = gridSetup(N_gm_x, N_gm_y, gridX, gridY, fullSPL)
+        trajectory = np.stack((x_coords,y_coords,z_coords),axis=1)
+        
+        coords = res.segments[0].analyses.noise.settings.ground_microphone_locations
+        
+        gridX = coords[:,0]
+        gridY = coords[:,1]
     
+        SPL = []
+        for segment in res.segments:
+                for i in range(0,len(segment.conditions.noise.total_SPL_dBA)):
+                    SPL.append(segment.conditions.noise.total_SPL_dBA[i])
+        
+        X,Y, splData = gridSetup(N_gm_x, N_gm_y, gridX, gridY, fullSPL)
+                    
+                    
     
     #plotting function calls
     groundTrackplot(trajectory,gridX,gridY)
@@ -274,4 +306,4 @@ def dBA_max_plot(X,Y,zVals,trajectory):
 
 
 
-resultProcessing()
+resultProcessing(True)
